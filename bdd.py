@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///alarme.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'alarme.db')
 db = SQLAlchemy(app)
 
 class Alarme(db.Model):
@@ -14,7 +16,8 @@ class Button(db.Model):
     name = db.Column(db.String(50), nullable=False)
     state = db.Column(db.Boolean, default=False)
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 @app.route('/activer', methods=['POST'])
 def activer():
